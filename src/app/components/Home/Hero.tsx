@@ -1,0 +1,23 @@
+import React from "react";
+
+export default function Hero() {
+  return (
+    <section className="home-hero relative h-screen w-full">
+     
+      
+      {/* Hero content */}
+      <div className=" mx-auto h-full flex flex-col justify-center items-center text-white">
+        <h1 className="text-[100px] md:text-6xl font-[600] mb-4 text-center leading-20">Culture. Art. <br />Commentary.</h1>
+        <p className="text-[18px] font-[400] md:text-2xl mb-8 max-w-2xl text-center">Where creative minds converge to explore the intersection of art, culture, and contemporary discourse. Start Reading</p>
+        <div className="flex space-x-4">
+            <button className="bg-[#FFFFFF] font-[500] text-[#000] hover:bg-blue-700 px-8 py-3 rounded-lg text-[18px] font-medium">
+          Start Reading
+        </button>
+        <button className="bg-[#FFFFFF] font-[500] text-[#000] hover:bg-blue-700 px-8 py-3 rounded-lg text-[18px] font-medium">
+          Become a Member
+        </button>
+        </div>
+      </div>
+    </section>
+  );
+}
