@@ -10,7 +10,8 @@ const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   content: z.string().min(1, 'Content is required'),
   author: z.string().min(1, 'Author name is required'),
-  coverImages: z.instanceof(FileList).optional(),
+  coverImages: z.any().optional(),
+
 });
 
 type FormData = z.infer<typeof formSchema>;
