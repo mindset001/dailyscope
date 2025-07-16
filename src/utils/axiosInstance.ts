@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://dailyscope-backend-production.up.railway.app',
   withCredentials: true,
 });
 
