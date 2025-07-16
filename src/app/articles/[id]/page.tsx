@@ -4,18 +4,10 @@ import Image from 'next/image';
 import { articles } from '../data/articles';
 import ArticlesSection from '../components/Suggestions';
 
-// interface ArticleDetailProps {
-//   params: {
-//     id: string;
-//   };
-// }
+
 
 export default function ArticleDetail() {
-  // const article = articles.find(article => article.id.toString() === params.id);
   
-  // if (!article) {
-  //   return <div>Article not found</div>;
-  // }
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
