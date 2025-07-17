@@ -5,7 +5,7 @@ import ArticlesSection from './components/Article'
 function page() {
   return (
      <main className='flex flex-col  gap-10'>
-     <div className=' bg-[#f9f9f9] px-20 py-10 flex flex-col gap-16'>
+     <div className=' bg-[#f9f9f9] px-8 md:px-20 py-4 md:py-10 flex flex-col gap-16'>
        <Hero/>
         <ArticlesSection/>
      </div>

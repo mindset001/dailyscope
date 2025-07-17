@@ -11,12 +11,12 @@ import Link from 'next/link';
 
 function page() {
     return (
-        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-10 px-20 gap-10'>
+        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-4 md:py-10 px-8 md:px-20 gap-10'>
 
-            <div className='w-1/2 mt-6'>
+            <div className='md:w-1/2 mt-6'>
                 <div >
-                    <h1 className='font-[600] text-[40px]'>Forget password</h1>
-                    <p className='font-[400] text-[16px]'>Enter your email address to get verification code.</p>
+                    <h1 className='font-[600] text-[25px] md:text-[40px] '>Forget password</h1>
+                    <p className='font-[400] text-[12px] md:text-[16px]'>Enter your email address to get verification code.</p>
 
 
                 </div>
@@ -41,7 +41,7 @@ function page() {
                 </form>
             </div>
 
-            <div className='w-1/2 '>
+            <div className='hidden md:block w-1/2 '>
                 <Image src={Login} alt="Login Image" className='' />
             </div>
 

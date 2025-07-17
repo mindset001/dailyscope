@@ -9,7 +9,7 @@ import Hero from "./components/Home/Hero";
 export default function Home() {
   return (
    <main >
-    <div className="bg-[#f9f9f9] p-10 flex flex-col items-center gap-16">
+    <div className="bg-[#f9f9f9] p-4 md:p-10 flex flex-col items-center gap-16">
       <Hero/>
     <Spotlight/>
     <ArticlesSection/>

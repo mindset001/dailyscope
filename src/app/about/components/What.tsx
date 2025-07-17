@@ -37,13 +37,13 @@ function What() {
     return (
         <main className='flex flex-col justify-center item-center text-center'>
             <div className='flex flex-col justify-center items-center'>
-                <h1 className='font-bold text-[80px]'>
+                <h1 className='w-full font-bold text-[40px] md:text-[80px]'>
                    What we do
                 </h1>
                 {/* <p className=' w-[55%]  text-[18px] font-[400] pt-2'>These principles guide everything we do, from the stories we tell to the community we build.</p> */}
             </div>
 
-            <div className='flex justify-center mt-6'>
+            <div className='w-full flex justify-center mt-6'>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-16'>
                 {articles.map((article) => (
                     <div key={article.id} className='flex flex-col items-center gap-4'>

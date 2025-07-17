@@ -52,12 +52,12 @@ function page() {
     };
 
     return (
-        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-10 px-20 gap-10'>
+        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-4 md:py-10 px-8 md:px-20 gap-10'>
 
             <div className=' mt-6'>
                 <div >
-                    <h1 className='font-[600] text-[40px]'>Create an account</h1>
-                    <p className='font-[400] text-[16px]'>Start exploring the scope in sharing the works of others who contribute to the history,
+                    <h1 className='font-[600] text-[25px] md:text-[40px]'>Create an account</h1>
+                    <p className='font-[400] text-[12px] md:text-[16px]'>Start exploring the scope in sharing the works of others who contribute to the history,
                         culture, and development in Africa.  </p>
 
 
@@ -125,7 +125,7 @@ function page() {
                 </form>
             </div>
 
-            <div className='pl-10'>
+            <div className='hidden md:block pl-10'>
                 <Image src={Login} alt="Login Image" className='' />
             </div>
 

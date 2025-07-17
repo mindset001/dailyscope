@@ -45,7 +45,7 @@ export default function Page() {
   return (
     <section className="bg-[#f9f9f9] pb-20 flex flex-col items-center justify-center min-h-screen">
         <div className="mb-8 flex flex-col items-center  ">
-        <h1 className="text-[82px] font-[800] mt-4 mb-2 text-center">Create an Article</h1>
+        <h1 className="text-[40px] md:text-[82px] font-[800] mt-4 mb-2 text-center px-2">Create an Article</h1>
         
       </div>
       
@@ -53,13 +53,13 @@ export default function Page() {
      
 
       {/* Plan card */}
-      <div className='p-6 bg-white w-[60%]  flex flex-col justify-center   rounded-lg shadow-md'>
+      <div className='p-6 bg-white md:w-[60%]  flex flex-col justify-center   rounded-lg shadow-md'>
          <div className="  p-6">
-      <h1 className="text-2xl font-bold mb-6 text-center">Create new Article</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center ">Create new Article</h1>
       
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Article Title */}
-        <div className='flex flex-row gap-4 w-full'>
+        <div className='flex flex-row gap-4 w-full '>
             <div className='w-full'>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Article title
@@ -69,7 +69,7 @@ export default function Page() {
             type="text"
             placeholder="Enter article title"
             {...form.register('title')}
-            className="mt-1 block w-full rounded-md bg-[#F6F6F6] rounded-[11px]  p-2  outline-none"
+            className="mt-1 block w-full rounded-md bg-[#F6F6F6] rounded-[11px] text-[12px] md:text-[16px] p-2  outline-none"
           />
           {form.formState.errors.title && (
             <p className="mt-1 text-sm text-red-600">{form.formState.errors.title.message}</p>
@@ -84,7 +84,7 @@ export default function Page() {
             type="text"
             placeholder="Enter author name"
             {...form.register('author')}
-            className="mt-1 block w-full rounded-md bg-[#F6F6F6] rounded-[11px]  p-2  outline-none"
+            className="mt-1 block w-full rounded-md bg-[#F6F6F6] rounded-[11px] text-[12px] md:text-[16px] p-2  outline-none"
           />
           {form.formState.errors.author && (
             <p className="mt-1 text-sm text-red-600">{form.formState.errors.author.message}</p>
@@ -142,7 +142,7 @@ export default function Page() {
                     ) : (
                       <>
                         <svg
-                          className="mx-auto h-12 w-12 text-gray-400"
+                          className="mx-auto md:h-12 md:w-12 text-gray-400"
                           stroke="currentColor"
                           fill="none"
                           viewBox="0 0 48 48"
@@ -155,7 +155,7 @@ export default function Page() {
                             strokeLinejoin="round"
                           />
                         </svg>
-                       <span className="mt-2 block text-sm font-medium text-gray-700">
+                       <span className="mt-2 block text-[12px] md:text-sm font-medium text-gray-700">
                           Upload Image 
                         </span>
                       </>

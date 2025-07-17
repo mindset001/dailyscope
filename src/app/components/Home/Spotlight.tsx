@@ -34,12 +34,12 @@ export default function Spotlight() {
         <section className="max-w-6xl mx-auto ">
             <div className='flex items-center justify-between px-6 py-6'>
                 <div>
-                    <h1 className="text-3xl font-bold">Featured Spotlight</h1>
-                    <p className="text-gray-600 pt-2">Celebrating creators, thinkers, and cultural innovators</p>
+                    <h1 className="text-[14px] text-3xl font-bold">Featured Spotlight</h1>
+                    <p className="text-[10px] text-gray-600 pt-2">Celebrating creators, thinkers, and cultural innovators</p>
                 </div>
-                <div className="mt-8 border border-[#E5E5E5] rounded-[12px] px-4 py-2">
-                    <Link href="/articles" className="text-[#000] hover:text-blue-800 font-medium">
-                        See More &gt;
+                <div className="mt-8 md:border border-[#E5E5E5] rounded-[12px] md:px-4 md:py-2">
+                    <Link href="/articles" className="text-[10px] text-[#000] hover:text-blue-800 font-medium">
+                        See More <span className='hidden md:block'>&gt;</span>
                     </Link>
                 </div>
             </div>

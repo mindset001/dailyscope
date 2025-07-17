@@ -17,14 +17,14 @@ import VerificationCodeInput from '@/app/components/verificationCodeInput';
 
 function page() {
     return (
-        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-10 px-20 gap-10'>
-            <div className='w-1/2'>
+        <main className='flex flex-col md:flex-row  justify-between bg-[#f9f9f9] py-4 md:py-10 px-8 md:px-20 gap-10'>
+            <div className='hidden md:block w-1/2'>
                 <Image src={Login} alt="Login Image" className='' />
             </div>
             <div className='  mt-6'>
                 <div >
-                    <h1 className='font-[600] text-[40px]'>Enter Verification code</h1>
-                    <p className='font-[400] text-[16px]'>Enter verification code to change your password.</p>
+                    <h1 className='font-[600] text-[25px] md:text-[40px]'>Enter Verification code</h1>
+                    <p className='font-[400] text-[12px] md:text-[16px]'>Enter verification code to change your password.</p>
 
 
                 </div>

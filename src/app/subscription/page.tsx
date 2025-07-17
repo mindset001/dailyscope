@@ -30,7 +30,7 @@ export default function SubscriptionPlans() {
   return (
     <section className="bg-[#f9f9f9] pb-20 flex flex-col items-center justify-center min-h-screen">
         <div className="mb-8 flex flex-col items-center  ">
-        <h1 className="text-[82px] font-[800] mt-4 mb-2 text-center">Choose your plan</h1>
+        <h1 className="text-[40px] md:text-[82px] font-[800] mt-4 mb-2 text-center">Choose your plan</h1>
          <div className="flex justify-center mb-4">
         <div className="inline-flex items-center p-1">
           <button
@@ -53,7 +53,7 @@ export default function SubscriptionPlans() {
      
 
       {/* Plan card */}
-      <div className='p-6 bg-white  w-[50%] h-[70vh] flex flex-col justify-center   rounded-lg shadow-md'>
+      <div className='p-6 bg-white  md:w-[50%] h-[70vh] flex flex-col justify-center rounded-lg shadow-md'>
          <div className="text-center flex flex-col items-center gap-4">
         <h3 className="text-3xl font-bold mb-2">{plans[billingCycle].price}</h3>
         <p className="text-gray-600 mb-4">Per {plans[billingCycle].period}</p>

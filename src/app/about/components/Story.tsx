@@ -5,11 +5,11 @@ import Image from 'next/image'
 function Story() {
     return (
         <main className='flex flex-col md:flex-row justify-betweenp-10 gap-10'>
-            <div className='w-1/2'>
+            <div className='md:w-1/2'>
                 <Image src={Man} alt=''/>
             </div>
-            <div className='w-1/2 flex flex-col gap-4 mt-10'>
-                <h1 className='font-bold text-[33px] text-right'>
+            <div className='md:w-1/2 flex flex-col gap-4 mt-10'>
+                <h1 className='font-bold text-[33px] md:text-right'>
                     Our Story
                 </h1>
                 <p className=' text-[18px] font-[400] pt-4 text-justify'> The Daily Scope was born from a simple observation: the most compelling stories often come from voices that haven't been traditionally amplified. Founded in 2023, we set out to create a space where artistic expression meets thoughtful analysis.</p>

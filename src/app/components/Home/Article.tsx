@@ -33,12 +33,12 @@ export default function ArticlesSection() {
         <section className="max-w-6xl mx-auto text-[#000]">
             <div className='flex items-center justify-between px-6 py-6'>
                 <div>
-                    <h1 className="text-3xl font-bold">Latest Articles</h1>
-                    <p className="text-gray-600 pt-2">In-depth analysis and cultural commentary</p>
+                    <h1 className="text-[14px] md:text-3xl font-bold">Latest Articles</h1>
+                    <p className="text-[10px] md:text-[18px] text-gray-600 pt-2">In-depth analysis and cultural commentary</p>
                 </div>
-                <div className="mt-8 border border-[#E5E5E5] rounded-[12px] px-4 py-2">
-                    <Link href="/articles" className="text-[#000] hover:text-blue-800 font-medium">
-                        Read All articles &gt;
+                <div className="mt-8 md:border  border-[#E5E5E5] rounded-[12px] px-4 py-2">
+                    <Link href="/articles" className="flex gap-2 text-[10px] md:text-[18px] text-[#000] hover:text-blue-800 font-medium">
+                        <p>Read All articles</p> <span className='hidden md:block'>&gt;</span>
                     </Link>
                 </div>
             </div>

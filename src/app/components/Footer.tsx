@@ -6,17 +6,18 @@ import {
   FaXTwitter,
   FaLinkedinIn,
   FaYoutube,
+  FaWhatsapp,
 } from 'react-icons/fa6';
 import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white px-18 py-12">
-      <div className="flex justify-between gap-20">
+    <footer className="bg-black text-white px-2 md:px-18 py-12">
+      <div className="flex flex-col md:flex-row justify-between gap-20">
         {/* Brand + Socials */}
-        <div className='w-2/3 px-8'>
+        <div className='md:w-2/3 px-8'>
           <h2 className="text-lg font-bold">The Daily Scope</h2>
-          <p className="text-sm mt-2 text-gray-300 w-2/3">
+          <p className="text-sm mt-2 text-gray-300 md:w-2/3">
             A member-powered platform amplifying diverse voices in art,
             culture, and creative discourse. Join us in fostering meaningful
             conversations that matter.
@@ -31,6 +32,9 @@ export default function Footer() {
             <a href="#" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
+            <a href="https://chat.whatsapp.com/Hy5Vh0qR1RnD5fK4RTOR2O?mode=ac_c" aria-label="WhatsApp">
+              <FaWhatsapp />
+            </a>
             <a href="#" aria-label="YouTube">
               <FaYoutube />
             </a>
@@ -39,7 +43,7 @@ export default function Footer() {
 
        
 
-        <div className='flex justify-between  w-1/2 pr-20'>
+        <div className='flex  justify-between  md:w-1/2 md:pr-20 px-6'>
              {/* Explore */}
         <div>
           <h3 className="text-sm font-semibold mb-2">Explore</h3>
@@ -76,7 +80,7 @@ export default function Footer() {
       <hr className="my-8 border-gray-700" />
 
        {/* Subscribe */}
-        <div className='w-2/3 px-8'>
+        <div className='md:w-2/3 px-8'>
           <h3 className="text-sm font-semibold mb-2">Stay updates</h3>
           <p className="text-sm text-gray-300 mb-4">
             Get our latest articles and spotlights delivered to your inbox.
@@ -101,8 +105,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 px-8">
         <p>© 2025 The Daily Scope. All rights reserved.</p>
         <p>
-          Made with <span className="text-red-500">❤️</span> for the creative
-          community
+          Powered by <Link href='https://www.megasisnetwork.co.uk'>Megasis Network</Link>
         </p>
       </div>
     </footer>

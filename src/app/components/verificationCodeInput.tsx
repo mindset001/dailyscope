@@ -55,7 +55,7 @@ export default function VerificationCodeInput({ length = 6 }: { length?: number 
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={handlePaste}
-          className="text-3xl h-[48px] w-[63px] text-center bg-[#F4F4F4] rounded-md focus:border-blue-500 focus:outline-none"
+          className="md:text-3xl h-[35px] w-[35px] md:h-[48px] md:w-[63px] text-center bg-[#F4F4F4] rounded-md focus:border-blue-500 focus:outline-none"
           autoFocus={index === 0}
         />
       ))}
