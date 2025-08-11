@@ -46,11 +46,11 @@ export default function LoginNavbar() {
 
 
         <ul className="hidden md:flex space-x-6 text-sm font-medium text-black items-center">
-          <li>
+          {/* <li>
             <Link href="/privacy" >
               Privacy
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link href="/contact">Contact</Link>
           </li>
@@ -95,9 +95,9 @@ export default function LoginNavbar() {
           <Link href="/spotlight" onClick={() => setMobileOpen(false)} className="block text-black">Spotlight</Link>
           <Link href="/articles" onClick={() => setMobileOpen(false)} className="block text-black">Articles</Link>
           <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block text-black">Contact</Link>
-           <Link href="/privacy" >
+           {/* <Link href="/privacy" >
               Privacy
-            </Link>
+            </Link> */}
         </div>
       )}
 

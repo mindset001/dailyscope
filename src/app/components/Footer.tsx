@@ -35,9 +35,7 @@ export default function Footer() {
             <a href="https://chat.whatsapp.com/Hy5Vh0qR1RnD5fK4RTOR2O?mode=ac_c" aria-label="WhatsApp">
               <FaWhatsapp />
             </a>
-            <a href="#" aria-label="YouTube">
-              <FaYoutube />
-            </a>
+          
           </div>
         </div>
 
@@ -67,9 +65,9 @@ export default function Footer() {
             <li>
               <Link href="/contact">Contact us</Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/privacy-policy">Privacy Policy</Link>
-            </li>
+            </li> */}
           </ul>
         </div>
         </div>
@@ -105,7 +103,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 px-8">
         <p>© 2025 The Daily Scope. All rights reserved.</p>
         <p>
-          Powered by <Link href='https://www.megasisnetwork.co.uk'>Megasis Network</Link>
+          Powered by <Link href='http://Megasisnetwork.co.uk'>Megasisnetwork.co.uk</Link>
         </p>
       </div>
     </footer>
