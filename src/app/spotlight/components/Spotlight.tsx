@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Lady from '../../../../public/images/lady.png'
 import { getSpotlights } from '@/services/spotlight';
+import { getArticles } from '@/services/article';
 
 // Mock data for the 9 spotlight items
 // const spotlightItems = [
@@ -87,21 +88,26 @@ function Spotlight() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
       
-   useEffect(() => {
-      const fetchArticles = async () => {
-        try {
-          const data = await getSpotlights();
-          setArticles(data);
-          console.log("Fetched spotlight:", data);
-        } catch (err: any) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchArticles();
-    }, []);
+useEffect(() => {
+  const fetchArticles = async () => {
+    try {
+      const data = await getArticles();
+      const spotlightArticles = data.filter(
+        (article: any) => article.actionTag === "spot"
+      );
+      setArticles(spotlightArticles);
+      console.log('Fetched articles:', spotlightArticles);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchArticles();
+}, []);
+
+
   return (
     <main className="container mx-auto px-4 py-8">
          <div className='flex items-center justify-between  py-6'>
@@ -140,13 +146,13 @@ function Spotlight() {
                 <p className="text-gray-600">{item.location}</p>
               </div>
 
-              <div className='flex gap-2 mt-4 flex-wrap'>
+              {/* <div className='flex gap-2 mt-4 flex-wrap'>
                 {item.category.map((tag:any) => (
                   <div key={tag} className='border border-[#E5E5E5] px-3 py-1 rounded-[16px]'>
                     <p className="text-sm text-gray-700">{tag}</p>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         ))}

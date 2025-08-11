@@ -1,33 +1,36 @@
 // components/ArticlesSection.js
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import One from '@/../public/images/image.png';
 import Two from '@/../public/images/image (1).png';
 import Image from 'next/image';
+import { getArticles } from '@/services/article';
 
 export default function ArticlesSection() {
-    const articles = [
-        {
-            id: 1,
-            category: 'Design',
-            title: 'The Renaissance of African Design Thinking',
-            description: 'How contemporary African designers are reshaping global creatives discourse through indigenous methodologies and modern innovation',
-            author: 'Chioma Nnadi',
-            readTime: '8 min read',
-            Image: One
-        },
-        {
-            id: 2,
-            category: 'Design',
-            title: 'The Renaissance of African Design Thinking',
-            description: 'How contemporary African designers are reshaping global creatives discourse through indigenous methodologies and modern innovation',
-            author: 'Chioma Nnadi',
-            readTime: '8 min read',
-            Image: Two
-        },
-        // Add more articles as needed
-    ];
+       const [articles, setArticles] = useState<any[]>([]);
+           const [loading, setLoading] = useState(true);
+           const [error, setError] = useState('');
+    
+       useEffect(() => {
+         const fetchArticles = async () => {
+           try {
+             const data = await getArticles();
+             const spotlightArticles = data.filter(
+               (article: any) => article.actionTag === "feat"
+             );
+             setArticles(spotlightArticles);
+             console.log('Fetched articles:', spotlightArticles);
+           } catch (err: any) {
+             setError(err.message);
+           } finally {
+             setLoading(false);
+           }
+         };
+       
+         fetchArticles();
+       }, []);
+       
 
     return (
         <section className="max-w-6xl mx-auto text-[#000]">
@@ -48,12 +51,12 @@ export default function ArticlesSection() {
                     <article key={article.id} className="rounded-lg shadow-md">
                         <div className='relative'>
                             <Image
-                                src={article.Image} alt='' className='rounded-t-md ' />
+                                src={One} alt='' className='rounded-t-md ' />
                             <span className=" absolute top-8 left-8 text-sm font-semibold bg-[#fff] p-[4px] rounded-[10px]">{article.category}</span>
                         </div>
                         <div className='p-6'>
                             <h2 className="text-2xl font-bold mt-2 mb-3">{article.title}</h2>
-                            <p className="text-gray-700 mb-4">{article.description}</p>
+                            <p className="text-gray-700 mb-4">{article.content}</p>
                        
                             <div className="flex items-center justify-between text-sm text-gray-500 mt-4 border-t pt-4 border-[#E5E5E5]">
                                 <div>

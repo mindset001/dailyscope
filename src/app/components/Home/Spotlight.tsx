@@ -1,45 +1,49 @@
 // components/ArticlesSection.js
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import One from '@/../public/images/image (2).png';
 import Two from '@/../public/images/image (3).png';
 import Three from '@/../public/images/image (4).png';
 import Image from 'next/image';
+import { getArticles } from '@/services/article';
 
 export default function Spotlight() {
-    const articles = [
-        {
-            id: 1,
-            title: 'Digital art in voices',
-            author: 'Adunni Olorunipa',
-            Image: One
-        },
-        {
-            id: 2,
-            title: 'Digital art in voices',
-            author: 'Adunni Olorunipa',
-            Image: Two
-        },
-         {
-            id: 3,
-            title: 'Digital art in voices',
-            author: 'Adunni Olorunipa',
-            Image: Three
-        },
-        // Add more articles as needed
-    ];
+
+      const [articles, setArticles] = useState<any[]>([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState('');
+ 
+    useEffect(() => {
+      const fetchArticles = async () => {
+        try {
+          const data = await getArticles();
+          const spotlightArticles = data.filter(
+            (article: any) => article.actionTag === "fspot"
+          );
+          setArticles(spotlightArticles);
+          console.log('Fetched articles:', spotlightArticles);
+        } catch (err: any) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      fetchArticles();
+    }, []);
+    
 
     return (
         <section className="max-w-6xl mx-auto ">
             <div className='flex items-center justify-between px-6 py-6'>
                 <div>
-                    <h1 className="text-[14px] text-3xl font-bold">Featured Spotlight</h1>
-                    <p className="text-[10px] text-gray-600 pt-2">Celebrating creators, thinkers, and cultural innovators</p>
+                    <h1 className="text-[14px] md:text-3xl font-bold">Featured Spotlight</h1>
+                    <p className="text-[10px] md:text-[16px] text-gray-600 pt-2">Celebrating creators, thinkers, and cultural innovators</p>
                 </div>
                 <div className="mt-8 md:border border-[#E5E5E5] rounded-[12px] md:px-4 md:py-2">
-                    <Link href="/articles" className="text-[10px] text-[#000] hover:text-blue-800 font-medium">
-                        See More <span className='hidden md:block'>&gt;</span>
+                    <Link href="/spotlight" className="text-[10px] md:text-[16px] text-[#000] hover:text-blue-800 font-medium flex gap-2">
+                        <p>See More</p> <span className='hidden md:block'>&gt;</span>
                     </Link>
                 </div>
             </div>
@@ -49,7 +53,7 @@ export default function Spotlight() {
                     <article key={article.id} className="rounded-lg shadow-md">
                         <div>
                             <Image
-                                src={article.Image} alt='' className='rounded-t-md ' />
+                                src={One} alt='' className='rounded-t-md ' />
                         </div>
                         <div className='p-4'>
                             <h2 className="text-2xl font-bold mt-2 mb-3">{article.title}</h2>

@@ -24,10 +24,10 @@ export default function Navbar() {
             <Link href="/about">About</Link>
           </li>
           <li>
-            <Link href="/auth/login">Spotlight</Link>
+            <Link href="/spotlight">Spotlight</Link>
           </li>
           <li>
-            <Link href="/auth/login">Articles</Link>
+            <Link href="/articles">Articles</Link>
           </li>
           <li>
             <Link href="/auth/login">Login</Link>
