@@ -1,5 +1,4 @@
 'use client'
-
 import {
   Card,
   CardContent,
@@ -30,21 +29,21 @@ interface User {
   firstName?: string;
   lastName?: string;
   email?: string;
-  // other user fields...
 }
 
 interface Article {
   id: string;
   title: string;
-  status: 'Active' | 'Suspended';
-  // other article fields...
+  actionTag: string;
+  createdAt: string; // Ensure this exists in your interface
 }
 
- function DashboardStats() {
+function DashboardStats() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [publicationData, setPublicationData] = useState<{month: string, articles: number}[]>([]);
 
   useEffect(() => {
     const rawUser = localStorage.getItem('user');
@@ -65,6 +64,11 @@ interface Article {
       try {
         const data = await getUserArticles(user.id);
         setArticles(data);
+        
+        // Process data for the chart
+        const monthlyData = processPublicationData(data);
+        setPublicationData(monthlyData);
+        
       } catch (err) {
         console.error(err);
         setError("Failed to load articles");
@@ -76,9 +80,31 @@ interface Article {
     fetchMyArticles();
   }, [user]);
 
-  // Calculate stats from articles
+  // Process article data for the timeline chart
+  const processPublicationData = (articles: Article[]) => {
+    const monthCounts: Record<string, number> = {};
+    
+    articles.forEach(article => {
+      if (!article.createdAt) return;
+      
+      const date = new Date(article.createdAt);
+      const monthYear = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
+      
+      monthCounts[monthYear] = (monthCounts[monthYear] || 0) + 1;
+    });
+
+    return Object.entries(monthCounts)
+      .map(([month, count]) => ({ month, articles: count }))
+      .sort((a, b) => {
+        // Sort chronologically
+        const [aMonth, aYear] = a.month.split(' ');
+        const [bMonth, bYear] = b.month.split(' ');
+        return new Date(`${aMonth} 1, ${aYear}`).getTime() - new Date(`${bMonth} 1, ${bYear}`).getTime();
+      });
+  };
+
   const suspendedArticlesCount = articles.filter(
-    article => article.status === 'Suspended'
+    article => article.actionTag === 'suspend'
   ).length;
 
   const dashboardData = [
@@ -90,7 +116,7 @@ interface Article {
     {
       title: 'Suspended Articles',
       value: suspendedArticlesCount,
-      icon: <DollarSign className="h-6 w-6 text-emerald-600" />,
+      icon: <DollarSign className="h-6 w-6 text-red-600" />,
     },
     {
       title: 'Subscription Status',
@@ -107,26 +133,6 @@ interface Article {
   if (loading) return <div>Loading dashboard...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
-const userGrowthData = [
-  { month: 'Jan', users: 100 },
-  { month: 'Feb', users: 300 },
-  { month: 'Mar', users: 600 },
-  { month: 'Apr', users: 900 },
-  { month: 'May', users: 1200 },
-  { month: 'Jun', users: 1500 },
-]
-
-
-const topArticles = [
-  { title: 'The Rise of AI in Africa', views: 1540 },
-  { title: 'Top 10 Tech Hubs in Nigeria', views: 1123 },
-  { title: 'How to Stay Secure Online', views: 980 },
-]
-
-
-
-
-  
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Overview</h1>
@@ -145,38 +151,46 @@ const topArticles = [
         ))}
       </div>
 
-      {/* Chart Section */}
+      {/* Article Publication Timeline Chart */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" /> User Growth (6 months)
+            <TrendingUp className="h-5 w-5 text-blue-600" /> 
+            Article Publication Timeline
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={userGrowthData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="users" fill="#3b82f6" />
-            </BarChart>
-          </ResponsiveContainer>
+          {publicationData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={publicationData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="articles" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-gray-500">No publication data available</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-   
       {/* Top Articles */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Viewed Articles</CardTitle>
+          <CardTitle>Recent Articles</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {articles.map((article, index) => (
-              <li key={index} className="flex justify-between border-b pb-2">
-                <span>{article.title}</span>
-                <span className="font-medium text-sm text-gray-600">{article.status || 0} views</span>
+            {articles.slice(0, 5).map((article) => (
+              <li key={article.id} className="flex justify-between border-b pb-2">
+                <span className="truncate max-w-[180px]">{article.title}</span>
+                <span className="font-medium text-sm text-gray-600">
+                  {new Date(article.createdAt).toLocaleDateString()}
+                </span>
               </li>
             ))}
           </ul>

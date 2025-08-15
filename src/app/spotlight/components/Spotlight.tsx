@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import Lady from '../../../../public/images/lady.png'
 import { getSpotlights } from '@/services/spotlight';
 import { getArticles } from '@/services/article';
+import Link from 'next/link';
 
 // Mock data for the 9 spotlight items
 // const spotlightItems = [
@@ -93,7 +94,7 @@ useEffect(() => {
     try {
       const data = await getArticles();
       const spotlightArticles = data.filter(
-        (article: any) => article.actionTag === "spot"
+        (article: any) => article.actionTag === "spot" || article.actionTag === "fspot"
       );
       setArticles(spotlightArticles);
       console.log('Fetched articles:', spotlightArticles);
@@ -128,7 +129,8 @@ useEffect(() => {
             </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.map((item) => (
-          <div key={item.id} className="shadow-md rounded-[16px] hover:shadow-lg transition-shadow duration-300">
+         <Link href={`/articles/${item.id}`} key={item.id}>
+           <div key={item.id} className="shadow-md rounded-[16px] hover:shadow-lg transition-shadow duration-300">
             <div className='relative'>
               <Image 
                 src={Lady} 
@@ -136,16 +138,18 @@ useEffect(() => {
                 className='rounded-t-[16px] w-full h-64 object-cover'
               />
               <div className='absolute bottom-10 left-10'>
-                <h1 className='text-[24px] font-[500] text-white'>{item.title}</h1>
-                <p className='text-[14px] font-[500] text-white'>{item.author}</p>
+                <h1 className='text-[24px] font-[500] text-white'>{item.title} </h1>
+                <p className='text-[14px] font-[500] text-white'>{item.authorName} </p>
               </div>
             </div>
 
             <div className='bg-white p-4 rounded-b-[16px]'>
               <div className='mt-4'>
-                <p className="text-gray-600">{item.location}</p>
+               <p className="text-gray-700 mb-4 line-clamp-2">{item.content}</p>
               </div>
-
+            <div>
+               <p className="text-gray-700 mb-4 line-clamp-3"><span className='font-[800]'>Category:</span> {item.category}</p>
+            </div>
               {/* <div className='flex gap-2 mt-4 flex-wrap'>
                 {item.category.map((tag:any) => (
                   <div key={tag} className='border border-[#E5E5E5] px-3 py-1 rounded-[16px]'>
@@ -155,6 +159,7 @@ useEffect(() => {
               </div> */}
             </div>
           </div>
+         </Link>
         ))}
       </div>
     </main>

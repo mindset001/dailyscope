@@ -1,24 +1,24 @@
-// components/Navbar.tsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import Adam from '../../../public/images/adam.png'; // Adjust the path as necessary
 import { Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+
+type User = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  avatar?: string;
+};
 
 export default function LoginNavbar() {
-   const [mobileOpen, setMobileOpen] = useState(false);
-   type User = { firstName?: string; lastName?: string; email?: string }; // Add other fields as needed
-   const [user, setUser] = useState<User | null>(null);
-    useEffect(() => {
-       const userData = localStorage.getItem('user');
-       setUser(userData ? JSON.parse(userData) : null);
-       console.log('User data:', userData);
-     }, []);
-     
+  const { user } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <header className="w-full bg-white px-10 py-4 border-b border-gray-200">
+    <header className="w-full bg-white px-4 sm:px-6 lg:px-10 py-4 border-b border-gray-200">
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="text-xl font-bold text-black">
@@ -26,81 +26,125 @@ export default function LoginNavbar() {
         </div>
 
         {/* Desktop Nav Links */}
-        <ul className="hidden md:flex space-x-6 text-sm font-medium text-black items-center">
-          <li>
-            <Link href="/" className="font-semibold">
+        <div className="hidden md:flex items-center space-x-6">
+          <div className="flex space-x-6 text-sm font-medium text-black">
+            <Link href="/" className="font-semibold hover:text-gray-600 transition-colors">
               Home
             </Link>
-          </li>
-          <li>
-            <Link href="/about">About</Link>
-          </li>
-          <li>
-            <Link href="/spotlight">Spotlight</Link>
-          </li>
-          <li>
-            <Link href="/articles">Articles</Link>
-          </li>
-         
-        </ul>
-
-
-        <ul className="hidden md:flex space-x-6 text-sm font-medium text-black items-center">
-          {/* <li>
-            <Link href="/privacy" >
-              Privacy
+            <Link href="/about" className="hover:text-gray-600 transition-colors">
+              About
             </Link>
-          </li> */}
-          <li>
-            <Link href="/contact">Contact</Link>
-          </li>
-          <li>
-            <Link href='/dashboard' className='flex items-center gap-2'>
-                <div className='bg-black h-12 w-12 rounded-full'>
-                    <Image src={Adam} alt=''/>
-                </div>
-                <div>
-                    <p>{user?.firstName} {user?.lastName}</p>
-                    <p>{user?.email}</p>
-                </div>
+            <Link href="/spotlight" className="hover:text-gray-600 transition-colors">
+              Spotlight
             </Link>
-          </li>
-         
-          
-         
-        </ul>
-      {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-black"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-        <Link href='/dashboard' className='flex md:hidden items-center gap-2'>
-                <div className='bg-black h-12 w-12 rounded-full'>
-                    <Image src={Adam} alt=''/>
-                </div>
-                {/* <div>
-                    <p>Adam</p>
-                    <p>Adamlukat@gmail.com</p>
-                </div> */}
+            <Link href="/articles" className="hover:text-gray-600 transition-colors">
+              Articles
             </Link>
-      </nav>
+          </div>
 
-      {/* Mobile Nav Dropdown */}
-      {mobileOpen && (
-        <div className="md:hidden mt-4 space-y-4 px-6 pb-6">
-          <Link href="/" onClick={() => setMobileOpen(false)} className="block font-semibold text-black">Home</Link>
-          <Link href="/about" onClick={() => setMobileOpen(false)} className="block text-black">About</Link>
-          <Link href="/spotlight" onClick={() => setMobileOpen(false)} className="block text-black">Spotlight</Link>
-          <Link href="/articles" onClick={() => setMobileOpen(false)} className="block text-black">Articles</Link>
-          <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block text-black">Contact</Link>
-           {/* <Link href="/privacy" >
-              Privacy
-            </Link> */}
+          <div className="flex items-center space-x-6 ml-6">
+            <Link href="/contact" className="text-sm font-medium text-black hover:text-gray-600 transition-colors">
+              Contact
+            </Link>
+            <Link href="/dashboard" className="flex items-center gap-2 group">
+              <div className="bg-black h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
+                {/* {user?.avatar ? (
+                  <Image 
+                    src={user.avatar} 
+                    alt={`${user. || ''} ${user.lastName || ''}`}
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                    priority
+                  />
+                ) : (
+                  <span className="text-white font-medium">
+                    {user?.firstName?.[0]}{user?.lastName?.[0]}
+                  </span>
+                )} */}
+              </div>
+              <div className="hidden lg:block">
+                <p className="text-sm font-medium group-hover:text-gray-600 transition-colors">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-xs text-gray-500 truncate max-w-[160px]">
+                  {user?.email}
+                </p>
+              </div>
+            </Link>
+          </div>
         </div>
-      )}
 
+        {/* Mobile Menu */}
+        <div className="flex md:hidden items-center gap-4">
+          <Link href="/dashboard" className="flex items-center">
+            <div className="bg-black h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
+              {/* {user?.avatar ? (
+                <Image 
+                  src={user.avatar} 
+                  alt="User avatar"
+                  width={40}
+                  height={40}
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <span className="text-white font-medium">
+                  {user?.firstName?.[0]}{user?.lastName?.[0]}
+                </span>
+              )} */}
+            </div>
+          </Link>
+          <button
+            className="text-black"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileOpen && (
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-lg z-50 px-6 py-4 space-y-4">
+            <Link 
+              href="/" 
+              onClick={() => setMobileOpen(false)}
+              className="block font-semibold text-black hover:text-gray-600 transition-colors"
+            >
+              Home
+            </Link>
+            <Link 
+              href="/about" 
+              onClick={() => setMobileOpen(false)}
+              className="block text-black hover:text-gray-600 transition-colors"
+            >
+              About
+            </Link>
+            <Link 
+              href="/spotlight" 
+              onClick={() => setMobileOpen(false)}
+              className="block text-black hover:text-gray-600 transition-colors"
+            >
+              Spotlight
+            </Link>
+            <Link 
+              href="/articles" 
+              onClick={() => setMobileOpen(false)}
+              className="block text-black hover:text-gray-600 transition-colors"
+            >
+              Articles
+            </Link>
+            <Link 
+              href="/contact" 
+              onClick={() => setMobileOpen(false)}
+              className="block text-black hover:text-gray-600 transition-colors"
+            >
+              Contact
+            </Link>
+          </div>
+        )}
+      </nav>
     </header>
   );
 }

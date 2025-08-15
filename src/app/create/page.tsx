@@ -11,7 +11,6 @@ const formSchema = z.object({
   content: z.string().min(1, 'Content is required'),
   authorName: z.string().min(1, 'Author name is required'),
   category: z.string().min(1, 'Category is required'),
-  coverImages: z.any().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -20,8 +19,7 @@ export default function CreateArticle() {
   const [previews, setPreviews] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const form = useForm<FormData>({
+ const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
@@ -31,58 +29,65 @@ export default function CreateArticle() {
     },
   });
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
+      const newFiles = Array.from(e.target.files).slice(0, 4 - files.length); // Limit to 4 files
       const newPreviews = newFiles.map(file => URL.createObjectURL(file));
       
-      // Combine existing files with new ones
       setFiles(prev => [...prev, ...newFiles]);
       setPreviews(prev => [...prev, ...newPreviews]);
-      
-      form.setValue('coverImages', [...files, ...newFiles]);
     }
   };
-
-  const removeImage = (index: number) => {
+ const removeImage = (index: number) => {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(previews[index]);
+    
     setFiles(prev => prev.filter((_, i) => i !== index));
     setPreviews(prev => prev.filter((_, i) => i !== index));
-    form.setValue('coverImages', files.filter((_, i) => i !== index));
   };
 
- const onSubmit = async (data: FormData) => {
-  const userData = localStorage.getItem("user");
-  const token = localStorage.getItem("token"); // Get token directly
+const onSubmit = async (data: FormData) => {
+    const userData = localStorage.getItem("user");
+    const token = localStorage.getItem("authToken");
 
-  if (!userData || !token) {
-    alert("Please login first");
-    return;
-  }
+    if (!userData || !token) {
+      alert("Please login first");
+      return;
+    }
 
-  const user = JSON.parse(userData);
-  
-  const formData = new FormData();
-  formData.append("title", data.title);
-  formData.append("content", data.content);
-  formData.append("category", data.category);
-  formData.append("authorName", data.authorName);
-  formData.append("userId", user._id);
+    const user = JSON.parse(userData);
+    
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("content", data.content);
+    formData.append("category", data.category);
+    formData.append("authorName", data.authorName);
+    formData.append("userId", user._id);
 
-  files.forEach(file => {
-    formData.append("images", file); // Changed to consistent field name
-  });
+    // Append files with proper field names
+    files.forEach((file, index) => {
+      if (index === 0) {
+        formData.append("cover", file); // First file as cover
+      } else {
+        formData.append("images", file); // Additional files
+      }
+    });
 
-  try {
-    console.log('Submitting with token:', token.slice(0, 10) + '...');
-    const result = await createArticles(formData);
-    alert("Article created successfully!");
-    form.reset();
-    setFiles([]);
-    setPreviews([]);
-  } catch (error: any) {
-    alert(error.message);
-  }
-};
+    try {
+      const result = await createArticles(formData);
+      alert("Article created successfully!");
+      
+      // Clean up object URLs
+      previews.forEach(url => URL.revokeObjectURL(url));
+      
+      form.reset();
+      setFiles([]);
+      setPreviews([]);
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      alert(error.message || "Failed to create article");
+    }
+  };
 
   return (
     <section className="bg-[#f9f9f9] pb-20 flex flex-col items-center justify-center min-h-screen">
@@ -164,60 +169,60 @@ export default function CreateArticle() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Images (Max 4)
-              </label>
-              <div className="grid grid-cols-4 gap-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div key={index} className="relative">
-                    <div className="bg-[#F6F6F6] border-gray-300 rounded-lg p-4 text-center h-32">
-                      {previews[index] ? (
-                        <>
-                          <img
-                            src={previews[index]}
-                            alt={`Preview ${index}`}
-                            className="h-full w-full object-cover rounded"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                          >
-                            ×
-                          </button>
-                        </>
-                      ) : (
-                        <label className="cursor-pointer h-full flex flex-col items-center justify-center">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageChange}
-                            multiple
-                          />
-                          <svg
-                            className="mx-auto h-8 w-8 text-gray-400"
-                            stroke="currentColor"
-                            fill="none"
-                            viewBox="0 0 48 48"
-                          >
-                            <path
-                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                              strokeWidth={2}
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          <span className="mt-2 block text-xs font-medium text-gray-700">
-                            Add Image
-                          </span>
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                ))}
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Upload Images (Max 4)
+        </label>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="relative">
+              <div className="bg-[#F6F6F6] border-gray-300 rounded-lg p-4 text-center h-32">
+                {previews[index] ? (
+                  <>
+                    <img
+                      src={previews[index]}
+                      alt={`Preview ${index}`}
+                      className="h-full w-full object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                    >
+                      ×
+                    </button>
+                  </>
+                ) : (
+                  <label className="cursor-pointer h-full flex flex-col items-center justify-center">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                      multiple
+                    />
+                    <svg
+                      className="mx-auto h-8 w-8 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span className="mt-2 block text-xs font-medium text-gray-700">
+                      Add Image
+                    </span>
+                  </label>
+                )}
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
             <div className="flex justify-center pt-6 border-t border-gray-200">
               <button

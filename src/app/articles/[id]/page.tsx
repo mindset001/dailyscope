@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { singleArticles } from '@/services/article';
+import { singleArticles, trackArticleView } from '@/services/article';
 import ArticlesSection from '../components/Article';
+import { setCookie, getCookie } from 'cookies-next';
 
 // Updated interface to match your actual API response
 interface Article {
@@ -16,6 +17,7 @@ interface Article {
   category: string;
   createdAt: string;
   updatedAt: string;
+  viewCount: number;
   // Optional sections (in case your API sometimes returns these)
   journey?: {
     title: string;
@@ -44,16 +46,42 @@ export default function ArticleDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
 
+
   useEffect(() => {
+    const trackView = async (articleId: string) => {
+      const viewCookie = getCookie(`article_${articleId}_view`);
+      
+      if (!viewCookie) {
+        try {
+          const trackingResult = await trackArticleView(articleId);
+          setCookie(`article_${articleId}_view`, 'viewed', {
+            maxAge: 60 * 60 * 24, // 24 hours
+            path: `/articles/${articleId}`,
+          });
+          
+          // Update view count in local state if tracking was successful
+          if (trackingResult.success && article) {
+            setArticle({
+              ...article,
+              viewCount: trackingResult.viewCount
+            });
+          }
+        } catch (err) {
+          console.error('Error tracking view:', err);
+        }
+      }
+    };
+
     const fetchArticle = async () => {
       if (!params.id) return;
       
       try {
         setLoading(true);
         const articleData = await singleArticles(params.id as string);
-        console.log("Fetched single article:", articleData.data);
         setArticle(articleData.data);
-        console.log("Article data 22:", articleData);
+        
+        // Track the view after successful fetch
+        trackView(params.id as string);
       } catch (err) {
         console.error('Error fetching article:', err);
         setError('Failed to load article');

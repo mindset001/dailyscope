@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+const {user} = require('@/app/context/AuthContext');
 const axiosInstance = axios.create({
   baseURL: process.env.NODE_ENV === 'production'
     ? 'https://dailyscope-backend-production.up.railway.app/api'
@@ -13,7 +13,7 @@ axiosInstance.interceptors.request.use(
     // Check if we're in the browser environment
     if (typeof window !== 'undefined') {
       // Get token directly from localStorage (only in browser)
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken') || user?.token;
       
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

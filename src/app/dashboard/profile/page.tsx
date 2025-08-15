@@ -1,72 +1,154 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-// import { toast } from 'react-hot-toast';
+import Image from 'next/image';
+import { toast } from 'react-hot-toast';
+import axiosInstance from '@/utils/axiosInstance';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 
 interface User {
   firstName: string;
   lastName: string;
   email: string;
+  profileImage?: string;
 }
-
 
 export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
-   const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       const parsedUser: User = JSON.parse(userData);
       setUser(parsedUser);
       setFirstName(parsedUser.firstName);
-       setLastName(parsedUser.lastName);
+      setLastName(parsedUser.lastName);
       setEmail(parsedUser.email);
+      if (parsedUser.profileImage) {
+        setProfileImage(parsedUser.profileImage);
+      }
     }
   }, []);
 
   const handlePasswordChange = async () => {
     if (!currentPassword || !newPassword) {
-      alert('Please fill in both fields');
+      toast.error('Please fill in both fields');
       return;
     }
 
     try {
       setLoading(true);
-
-      const token = localStorage.getItem('token'); // adjust based on where you store your JWT
-
-      const res = await fetch('http://localhost:5000/api/auth/update-password', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
+      await axiosInstance.patch('/auth/update-password', {
+        currentPassword,
+        newPassword
       });
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || 'Failed to update password');
-
-     alert('Password updated successfully!');
+      toast.success('Password updated successfully!');
       setCurrentPassword('');
       setNewPassword('');
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.response?.data?.message || 'Failed to update password');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setProfileImage(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileUpdate = async () => {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('firstName', firstName);
+      formData.append('lastName', lastName);
+      
+      if (fileInputRef.current?.files?.[0]) {
+        formData.append('profileImage', fileInputRef.current.files[0]);
+      }
+
+      const { data } = await axiosInstance.patch('/auth/update-profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      // Update local storage with new user data
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem('user') || '{}'),
+        firstName: data.firstName,
+        lastName: data.lastName,
+        profileImage: data.profileImage
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      toast.success('Profile updated successfully!');
+      setIsEditing(false);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      toast.error('Please enter your password');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axiosInstance.delete('/users/delete-account', {
+        data: { password: deletePassword }
+      });
+
+      // Clear local storage and redirect
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    } catch (err: any) {
+      toast.error(err.response?.message || 'Failed to delete account');
+    } finally {
+      setLoading(false);
+      setIsDeleteModalOpen(false);
+      setDeletePassword('');
     }
   };
 
@@ -78,21 +160,101 @@ export default function ProfilePage() {
           <CardTitle>Profile Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="firstName">First Name</Label>
-              <Input id="name" placeholder="John Doe"  value={firstName} />
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
+                {profileImage ? (
+                  <Image
+                    src={profileImage}
+                    alt="Profile"
+                    width={128}
+                    height={128}
+                    className="object-cover w-full h-full"
+                    priority
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-500">No Image</span>
+                  </div>
+                )}
+              </div>
+              {isEditing && (
+                <>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute bottom-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={triggerFileInput}
+                  >
+                    Change
+                  </Button>
+                </>
+              )}
             </div>
-            <div>
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input id="email" type="email" placeholder="john@example.com" value={lastName}/>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+            </div>
+            <div className="w-full">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                disabled
+              />
             </div>
           </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="john@example.com" value={email}/>
-            </div>
-          <Button className="mt-4">Update Profile</Button>
+
+          <div className="flex justify-end gap-2">
+            {isEditing ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditing(false);
+                    // Reset to original values
+                    if (user) {
+                      setFirstName(user.firstName);
+                      setLastName(user.lastName);
+                      setProfileImage(user.profileImage || null);
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleProfileUpdate} disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -124,7 +286,12 @@ export default function ProfilePage() {
               />
             </div>
           </div>
-          <Button className="mt-4" variant="outline" onClick={handlePasswordChange} disabled={loading}>
+          <Button
+            className="mt-4"
+            variant="outline"
+            onClick={handlePasswordChange}
+            disabled={loading}
+          >
             {loading ? 'Updating...' : 'Change Password'}
           </Button>
         </CardContent>
@@ -141,9 +308,48 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-500 mb-4">
             Deleting your account is irreversible. All your data will be lost.
           </p>
-          <Button variant="destructive">Delete Account</Button>
+          <Button 
+            variant="destructive"
+            onClick={() => setIsDeleteModalOpen(true)}
+          >
+            Delete Account
+          </Button>
         </CardContent>
       </Card>
+
+      {/* Delete Account Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Account</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. All your data will be permanently deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Label htmlFor="deletePassword">Enter your password to confirm:</Label>
+            <Input
+              id="deletePassword"
+              type="password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              placeholder="Your password"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={loading || !deletePassword}
+            >
+              {loading ? 'Deleting...' : 'Delete Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
