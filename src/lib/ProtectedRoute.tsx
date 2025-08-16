@@ -5,19 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading, isLoggedIn } = useAuth(); // Make sure your AuthContext provides isLoggedIn
+  const { user, loading, isAuthenticated } = useAuth(); // Make sure your AuthContext provides isLoggedIn
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     // Only check auth if we haven't already
     if (!authChecked && !loading) {
-      if (!isLoggedIn) {
+      if (!isAuthenticated) {
         router.push('/auth/login');
       }
       setAuthChecked(true);
     }
-  }, [isLoggedIn, loading, router, authChecked]);
+  }, [isAuthenticated, loading, router, authChecked]);
 
   if (loading || !authChecked) {
     return (
@@ -27,7 +27,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return null; // Still redirecting
   }
 

@@ -20,11 +20,11 @@ export const getUserArticles = async (userId: string) => {
 // services/article.ts
 export const trackArticleView = async (articleId: string) => {
   try {
-    const response = await axiosInstance.post('/api/articles/track', { articleId });
+    const response = await axiosInstance.post(`/articles/${articleId}/track-view`);
     return response.data;
   } catch (error) {
     console.error('Error tracking article view:', error);
-    throw error; // Or handle the error as needed
+    throw error;
   }
 };
 
