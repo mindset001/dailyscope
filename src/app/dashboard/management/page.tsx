@@ -95,9 +95,15 @@ export default function ArticleManagementPage() {
       try {
         setLoading(true);
         const data = await getUserArticles(user.id);
-        setArticles(data);
-        console.log('Fetched user articles:', data);
-        setFilteredArticles(data); // Initialize filtered articles
+
+        // Map _id to id for each article
+        const mappedData = data.map((article: any) => ({
+          ...article,
+          id: article._id || article.id, // fallback to id if already mapped
+        }));
+
+        setArticles(mappedData);
+        setFilteredArticles(mappedData); // Initialize filtered articles
       } catch (err) {
         console.error(err);
         setError('Failed to load articles');

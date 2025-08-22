@@ -36,24 +36,28 @@ export const createArticles = async (formData: FormData) => {
     const token = localStorage.getItem('authToken');
     console.log('Current token:', token ? '****' + token.slice(-4) : 'NO TOKEN');
     
-    const response = await axiosInstance.post('/articles', formData);
+    // Important: Set proper headers for file upload
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    };
     
-    console.log('Request headers:', {
-      Authorization: response.config.headers?.Authorization
-    });
+    const response = await axiosInstance.post('/articles', formData, config);
     
+    console.log('Upload successful:', response.data);
     return response.data;
   } catch (error: any) {
-    console.error('Error details:', {
+    console.error('Upload error:', {
       status: error.response?.status,
       data: error.response?.data,
-      headers: error.config?.headers
+      message: error.message
     });
     
     throw new Error(error.response?.data?.message || 'Failed to create article');
   }
 };
-
 
 export const updateArticle = async (articleId: string, data: {
   title: string;

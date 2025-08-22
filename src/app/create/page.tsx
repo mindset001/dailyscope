@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState, useRef, ChangeEvent } from 'react';
 import { createArticles } from '@/services/article';
+import { message, notification } from 'antd';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -16,8 +17,9 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function CreateArticle() {
-  const [previews, setPreviews] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [imageError, setImageError] = useState<string>(''); // Add this line
   const fileInputRef = useRef<HTMLInputElement>(null);
  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -30,14 +32,13 @@ export default function CreateArticle() {
   });
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files).slice(0, 4 - files.length); // Limit to 4 files
-      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
-      
-      setFiles(prev => [...prev, ...newFiles]);
-      setPreviews(prev => [...prev, ...newPreviews]);
-    }
-  };
+  if (e.target.files && e.target.files.length > 0) {
+    const newFiles = Array.from(e.target.files).slice(0, 4 - files.length); // Limit to 4 files
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    setFiles(prev => [...prev, ...newFiles]);
+    setPreviews(prev => [...prev, ...newPreviews]);
+  }
+};
  const removeImage = (index: number) => {
     // Revoke the object URL to prevent memory leaks
     URL.revokeObjectURL(previews[index]);
@@ -47,47 +48,59 @@ export default function CreateArticle() {
   };
 
 const onSubmit = async (data: FormData) => {
-    const userData = localStorage.getItem("user");
-    const token = localStorage.getItem("authToken");
+  setImageError('');
+  if (files.length === 0) {
+    setImageError('At least one image is required.');
+    return;
+  }
+  if (files.length > 4) {
+    setImageError('You can upload a maximum of 4 images.');
+    return;
+  }
 
-    if (!userData || !token) {
-      alert("Please login first");
-      return;
-    }
+  const userData = localStorage.getItem("user");
+  const token = localStorage.getItem("authToken");
 
-    const user = JSON.parse(userData);
-    
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("content", data.content);
-    formData.append("category", data.category);
-    formData.append("authorName", data.authorName);
-    formData.append("userId", user._id);
-
-    // Append files with proper field names
-    files.forEach((file, index) => {
-      if (index === 0) {
-        formData.append("cover", file); // First file as cover
-      } else {
-        formData.append("images", file); // Additional files
-      }
+  if (!userData || !token) {
+    notification.error({
+      message: 'Authentication Error',
+      description: 'Please login first.',
     });
+    return;
+  }
 
-    try {
-      const result = await createArticles(formData);
-      alert("Article created successfully!");
-      
-      // Clean up object URLs
-      previews.forEach(url => URL.revokeObjectURL(url));
-      
-      form.reset();
-      setFiles([]);
-      setPreviews([]);
-    } catch (error: any) {
-      console.error("Submission error:", error);
-      alert(error.message || "Failed to create article");
-    }
-  };
+  const user = JSON.parse(userData);
+
+  const formData = new FormData();
+  formData.append("title", data.title);
+  formData.append("content", data.content);
+  formData.append("category", data.category);
+  formData.append("authorName", data.authorName);
+  formData.append("userId", user.id);
+
+  // First file as cover, rest as images
+  if (files[0]) {
+    formData.append("cover", files[0]);
+  }
+  files.slice(1).forEach(file => {
+    formData.append("images", file);
+  });
+
+  try {
+    const result = await createArticles(formData);
+    message.success('Article created successfully!');
+    previews.forEach(url => URL.revokeObjectURL(url));
+    form.reset();
+    setFiles([]);
+    setPreviews([]);
+  } catch (error: any) {
+   message.error({
+      // message: 'Submission Error',
+      content: error?.response?.data?.error || error.message || "Failed to create article",
+    });
+    console.error("Submission error:", error);
+  }
+};
 
   return (
     <section className="bg-[#f9f9f9] pb-20 flex flex-col items-center justify-center min-h-screen">
@@ -158,6 +171,7 @@ const onSubmit = async (data: FormData) => {
               </label>
               <textarea
                 id="content"
+                aria-multiline
                 rows={10}
                 placeholder="Enter article content"
                 {...form.register('content')}
@@ -223,6 +237,9 @@ const onSubmit = async (data: FormData) => {
           ))}
         </div>
       </div>
+      {imageError && (
+    <p className="mt-1 text-sm text-red-600">{imageError}</p>
+  )}
 
             <div className="flex justify-center pt-6 border-t border-gray-200">
               <button

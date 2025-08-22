@@ -17,6 +17,7 @@ interface Article {
   category: string;
   readTime: string;
   Image?: string;
+  cover?: string; // Assuming the API returns a cover image
 }
 
 export default function ArticlesSection() {
@@ -190,7 +191,7 @@ export default function ArticlesSection() {
             <article className="rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <div className='relative'>
                 <Image
-                  src={article.Image || One} // Use article image if available, fallback to One
+                  src={article.cover || One} // Use article image if available, fallback to One
                   alt={article.title || 'Article image'} 
                   className='rounded-t-md w-full h-48 object-cover' 
                   width={400}

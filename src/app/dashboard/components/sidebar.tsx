@@ -4,8 +4,21 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Home, Users, Settings } from 'lucide-react'
+import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Remove auth data from localStorage (or cookies if used)
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    // Optionally clear other app state here
+
+    // Redirect to login page
+    router.push('/auth/login');
+  };
+
   return (
     <aside className="w-64 bg-white border-r p-4 flex flex-col justify-between h-screen">
       {/* <h2 className="text-xl font-bold mb-6">Dashboard</h2> */}
@@ -38,7 +51,7 @@ export function Sidebar() {
       </nav>
 
 
-      <Button>
+      <Button onClick={handleLogout}>
         Logout
       </Button>
     </aside>

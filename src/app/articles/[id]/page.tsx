@@ -6,13 +6,15 @@ import { useParams } from 'next/navigation';
 import { singleArticles, trackArticleView } from '@/services/article';
 import ArticlesSection from '../components/Article';
 import { setCookie, getCookie } from 'cookies-next';
+import ReactMarkdown from 'react-markdown';
 
 // Updated interface to match your actual API response
 interface Article {
   _id: string;
   title: string;
   authorName: string; // Changed from 'author' to match API
-  images: string[]; // Changed from 'Image' to match API (array of images)
+  images: string[];
+  cover: string; // Changed from 'Image' to match API (array of images)
   content: string; // Changed from 'history' to match API
   category: string;
   createdAt: string;
@@ -79,6 +81,7 @@ export default function ArticleDetail() {
         setLoading(true);
         const articleData = await singleArticles(params.id as string);
         setArticle(articleData.data);
+        console.log("Fetched single article:", articleData.data);
         
         // Track the view after successful fetch
         trackView(params.id as string);
@@ -137,13 +140,13 @@ export default function ArticleDetail() {
       {/* Article Header */}
       <div className="mb-8">
         <h1 className="text-[55px] font-[800] mt-4 mb-6 text-center">
-          {article.title} by {article.authorName}
+          {article.title} with {article.authorName}
         </h1>
         
         {/* Handle images array - show first image if available */}
-        {article.images && article.images.length > 0 ? (
+        {article.cover && article.cover.trim().length > 0 ? (
           <Image
-            src={article.images[0]}
+            src={article.cover}
             alt={article.title}
             width={1200}
             height={630}
@@ -163,10 +166,19 @@ export default function ArticleDetail() {
         {/* Main content section */}
         {article.content && (
           <div className="pr-10 my-8">
-            <h2 className="text-[42px] font-[600] mb-4">About</h2>
-            <p className="text-lg text-gray-700 mb-8 w-[70%] mx-auto text-justify">
-              {article.content}
-            </p>
+            {/* <h2 className="text-[42px] font-[600] mb-4">About</h2> */}
+            <div className="text-lg text-gray-700 mb-8 w-[70%] mx-auto text-justify">
+              {article.content.split('\n\n').map((para, idx) => (
+                <p key={idx} style={{ marginBottom: '1em' }}>
+                  {para.split('\n').map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line}
+                      <br />
+                    </React.Fragment>
+                  ))}
+                </p>
+              ))}
+            </div>
           </div>
         )}
 
