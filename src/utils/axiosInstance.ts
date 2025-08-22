@@ -1,9 +1,7 @@
 import axios from 'axios';
 const {user} = require('@/app/context/AuthContext');
 const axiosInstance = axios.create({
-  baseURL: process.env.NODE_ENV === 'production'
-    ? 'https://dailyscope-backend.onrender.com/api'
-    : 'http://localhost:5000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api',
   withCredentials: true,
 });
 
