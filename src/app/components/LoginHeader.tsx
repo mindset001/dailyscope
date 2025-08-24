@@ -47,8 +47,8 @@ export default function LoginNavbar() {
               Contact
             </Link>
             <Link href="/dashboard" className="flex items-center gap-2 group">
-              <div className="bg-black h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
-                {/* {user?.avatar ? (
+              {/* <div className="bg-black h-10 w-10 rounded-full overflow-hidden flex items-center justify-center">
+                {user?.avatar ? (
                   <Image 
                     src={user.avatar} 
                     alt={`${user. || ''} ${user.lastName || ''}`}
@@ -61,8 +61,8 @@ export default function LoginNavbar() {
                   <span className="text-white font-medium">
                     {user?.firstName?.[0]}{user?.lastName?.[0]}
                   </span>
-                )} */}
-              </div>
+                )}
+              </div> */}
               <div className="hidden lg:block">
                 <p className="text-sm font-medium group-hover:text-gray-600 transition-colors">
                   {user?.firstName} {user?.lastName}

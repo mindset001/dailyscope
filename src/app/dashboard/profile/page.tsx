@@ -161,7 +161,7 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col items-center space-y-4">
-            <div className="relative group">
+            {/* <div className="relative group">
               <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
                 {profileImage ? (
                   <Image
@@ -197,7 +197,7 @@ export default function ProfilePage() {
                   </Button>
                 </>
               )}
-            </div>
+            </div> */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div>
