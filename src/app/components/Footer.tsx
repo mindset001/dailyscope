@@ -5,105 +5,92 @@ import {
   FaInstagram,
   FaXTwitter,
   FaLinkedinIn,
-  FaYoutube,
   FaWhatsapp,
 } from 'react-icons/fa6';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch(
+        'http://localhost:5000/api/newsletter/subscribe',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage('✅ Subscription successful! Check your inbox.');
+        setEmail('');
+      } else {
+        setMessage(data.message || '❌ Failed to subscribe.');
+      }
+    } catch (error) {
+      setMessage('⚠️ Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-black text-white px-2 md:px-18 py-12">
-      <div className="flex flex-col md:flex-row justify-between gap-20">
-        {/* Brand + Socials */}
-        <div className='md:w-2/3 px-8'>
-          <h2 className="text-lg font-bold">The Daily Scope</h2>
-          <p className="text-sm mt-2 text-gray-300 md:w-2/3">
-            A member-powered platform amplifying diverse voices in art,
-            culture, and creative discourse. Join us in fostering meaningful
-            conversations that matter.
+      {/* ... your existing code for brand, socials, explore, support */}
+
+      <hr className="my-8 border-gray-700" />
+
+      {/* Subscribe */}
+      <div className="md:w-2/3 px-8">
+        <h3 className="text-sm font-semibold mb-2">Stay updated</h3>
+        <p className="text-sm text-gray-300 mb-4">
+          Get our latest articles and spotlights delivered to your inbox.
+        </p>
+        <form onSubmit={handleSubscribe} className="flex gap-2">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="bg-[#727272] w-2/3 px-4 py-2 border border-[#727272] text-sm text-white rounded-md focus:outline-none"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-white text-black px-4 py-2 text-sm font-semibold rounded-md hover:opacity-90 disabled:opacity-50"
+          >
+            {loading ? 'Subscribing...' : 'Subscribe'}
+          </button>
+        </form>
+
+        {message && (
+          <p className="mt-2 text-sm">
+            {message}
           </p>
-          <div className="flex space-x-4 mt-4 text-white text-lg">
-            <a href="#" aria-label="Instagram">
-              <FaInstagram />
-            </a>
-            <a href="#" aria-label="Twitter">
-              <FaXTwitter />
-            </a>
-            <a href="#" aria-label="LinkedIn">
-              <FaLinkedinIn />
-            </a>
-            <a href="https://chat.whatsapp.com/Hy5Vh0qR1RnD5fK4RTOR2O?mode=ac_c" aria-label="WhatsApp">
-              <FaWhatsapp />
-            </a>
-          
-          </div>
-        </div>
-
-       
-
-        <div className='flex  justify-between  md:w-1/2 md:pr-20 px-6'>
-             {/* Explore */}
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Explore</h3>
-          <ul className="space-y-1 text-sm text-gray-300">
-            <li>
-              <Link href="/about">About Us</Link>
-            </li>
-            <li>
-              <Link href="/spotlight">Spotlight</Link>
-            </li>
-            <li>
-              <Link href="/articles">Articles</Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Support */}
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Support</h3>
-          <ul className="space-y-1 text-sm text-gray-300">
-            <li>
-              <Link href="/contact">Contact us</Link>
-            </li>
-            {/* <li>
-              <Link href="/privacy-policy">Privacy Policy</Link>
-            </li> */}
-          </ul>
-        </div>
-        </div>
-
-      
+        )}
       </div>
 
       <hr className="my-8 border-gray-700" />
 
-       {/* Subscribe */}
-        <div className='md:w-2/3 px-8'>
-          <h3 className="text-sm font-semibold mb-2">Stay updates</h3>
-          <p className="text-sm text-gray-300 mb-4">
-            Get our latest articles and spotlights delivered to your inbox.
-          </p>
-          <form className="flex gap-2">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="bg-[#727272] w-2/3 px-4 py-2 border border-[#727272] text-sm text-white rounded-md focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-white text-black px-4 py-2 text-sm font-semibold rounded-md hover:opacity-90"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
-
-       <hr className="my-8 border-gray-700" />
-
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 px-8">
         <p>© 2025 The Daily Scope. All rights reserved.</p>
         <p>
-          Powered by <Link href='http://Megasisnetwork.co.uk'>Megasisnetwork.co.uk</Link>
+          Powered by{' '}
+          <Link href="http://Megasisnetwork.co.uk">Megasisnetwork.co.uk</Link>
         </p>
       </div>
     </footer>
