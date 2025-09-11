@@ -8,16 +8,17 @@ import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
   const router = useRouter();
-
-  const handleLogout = () => {
-    // Remove auth data from localStorage (or cookies if used)
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    // Optionally clear other app state here
-
-    // Redirect to login page
-    router.push('/auth/login');
-  };
+  
+const handleLogout = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('user');
+  
+  // Redirect and then reload after a short delay
+  router.push('/auth/login');
+  setTimeout(() => {
+    window.location.reload();
+  }, 100); // Small delay to ensure navigation happens
+};
 
   return (
     <aside className="w-64 bg-white border-r p-4 flex flex-col justify-between h-screen">

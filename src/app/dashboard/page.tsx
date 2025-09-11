@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import ProtectedRoute from '@/lib/ProtectedRoute'
 import { getUserArticles } from '@/services/article'
 import {
   Users,
@@ -25,6 +26,7 @@ import {
 } from 'recharts'
 
 interface User {
+  _id: string;
   id: string;
   firstName?: string;
   lastName?: string;
@@ -62,7 +64,7 @@ function DashboardStats() {
     const fetchMyArticles = async () => {
       setLoading(true);
       try {
-        const data = await getUserArticles(user.id);
+        const data = await getUserArticles(user._id || user.id);
         setArticles(data);
         
         // Process data for the chart
@@ -134,9 +136,9 @@ function DashboardStats() {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="p-6 space-y-6">
+      <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
+        <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Overview</h1>
-
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {dashboardData.map((item, index) => (
           <Card key={index}>
@@ -197,6 +199,8 @@ function DashboardStats() {
         </CardContent>
       </Card>
     </div>
+      </ProtectedRoute>
+    
   )
 }
 

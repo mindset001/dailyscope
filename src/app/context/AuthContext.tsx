@@ -4,19 +4,28 @@
 import axiosInstance from '@/utils/axiosInstance'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
 
+interface Subscription {
+  active: boolean
+  plan?: 'monthly' | 'yearly'
+  nextBillingDate?: string
+}
+
 interface User {
+  _id: string
   id: string
   email: string
   firstName: string
   lastName: string
+  subscription?: Subscription
 }
 
 interface AuthContextType {
   user: User | null
   token: string | null
-  login: (email: string, password: string, ) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
+  hasActiveSubscription: boolean
   loading: boolean
 }
 
@@ -66,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize auth state from storage
   useEffect(() => {
-    const initializeAuth = async () => {
+    const initializeAuth = () => {
       try {
         if (typeof window !== 'undefined') {
           const storedToken = localStorage.getItem('authToken')
@@ -74,11 +83,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           if (storedToken) {
             setToken(storedToken)
-            // Verify token here if needed
+            // Set default authorization header
+            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`
           }
           
           if (storedUser) {
-            setUser(JSON.parse(storedUser))
+            const userData = JSON.parse(storedUser)
+            setUser(userData)
           }
         }
       } catch (error) {
@@ -97,7 +108,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     logout,
     isAuthenticated: !!token,
-    loading
+    hasActiveSubscription: user?.subscription?.active || false,
+    loading,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

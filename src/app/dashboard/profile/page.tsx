@@ -17,6 +17,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import ProtectedRoute from '@/lib/ProtectedRoute';
 
 interface User {
   firstName: string;
@@ -40,15 +41,26 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+
     const userData = localStorage.getItem('user');
     if (userData) {
-      const parsedUser: User = JSON.parse(userData);
-      setUser(parsedUser);
-      setFirstName(parsedUser.firstName);
-      setLastName(parsedUser.lastName);
-      setEmail(parsedUser.email);
-      if (parsedUser.profileImage) {
-        setProfileImage(parsedUser.profileImage);
+      try {
+        const parsedUser: User = JSON.parse(userData);
+        setUser(parsedUser);
+        console.log('oay', parsedUser)
+        // Ensure we always have string values, never undefined
+        setFirstName(parsedUser.firstName || '');
+        setLastName(parsedUser.lastName || '');
+        setEmail(parsedUser.email || '');
+        if (parsedUser.profileImage) {
+          setProfileImage(parsedUser.profileImage);
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Set safe defaults if parsing fails
+        setFirstName('');
+        setLastName('');
+        setEmail('');
       }
     }
   }, []);
@@ -76,52 +88,40 @@ export default function ProfilePage() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setProfileImage(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+
+ const handleProfileUpdate = async () => {
+  try {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
+
+    if (fileInputRef.current?.files?.[0]) {
+      formData.append('profileImage', fileInputRef.current.files[0]);
     }
-  };
 
-  const handleProfileUpdate = async () => {
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append('firstName', firstName);
-      formData.append('lastName', lastName);
-      
-      if (fileInputRef.current?.files?.[0]) {
-        formData.append('profileImage', fileInputRef.current.files[0]);
-      }
+   const { data } = await axiosInstance.patch('/auth/update-profile', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
 
-      const { data } = await axiosInstance.patch('/auth/update-profile', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+    // Use `data.user` instead of `data`
+  const updatedUser = {
+  ...JSON.parse(localStorage.getItem('user') || '{}'),
+  ...data.user
+};
 
-      // Update local storage with new user data
-      const updatedUser = {
-        ...JSON.parse(localStorage.getItem('user') || '{}'),
-        firstName: data.firstName,
-        lastName: data.lastName,
-        profileImage: data.profileImage
-      };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setUser(updatedUser);
+   localStorage.setItem('user', JSON.stringify(updatedUser));
+setUser(updatedUser);
 
-      toast.success('Profile updated successfully!');
-      setIsEditing(false);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to update profile');
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.success('Profile updated successfully!');
+    setIsEditing(false);
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || 'Failed to update profile');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
@@ -153,7 +153,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+     <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
+         <div className="max-w-4xl mx-auto p-6 space-y-8">
       {/* Profile Info */}
       <Card>
         <CardHeader>
@@ -161,50 +162,12 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col items-center space-y-4">
-            {/* <div className="relative group">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
-                {profileImage ? (
-                  <Image
-                    src={profileImage}
-                    alt="Profile"
-                    width={128}
-                    height={128}
-                    className="object-cover w-full h-full"
-                    priority
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">No Image</span>
-                  </div>
-                )}
-              </div>
-              {isEditing && (
-                <>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute bottom-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={triggerFileInput}
-                  >
-                    Change
-                  </Button>
-                </>
-              )}
-            </div> */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
               <div>
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  value={firstName}
+                  value={firstName || ''} // Ensure always a string
                   onChange={(e) => setFirstName(e.target.value)}
                   disabled={!isEditing}
                 />
@@ -213,7 +176,7 @@ export default function ProfilePage() {
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  value={lastName}
+                  value={lastName || ''} // Ensure always a string
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={!isEditing}
                 />
@@ -224,7 +187,7 @@ export default function ProfilePage() {
               <Input
                 id="email"
                 type="email"
-                value={email}
+                value={email || ''} // Ensure always a string
                 disabled
               />
             </div>
@@ -237,10 +200,10 @@ export default function ProfilePage() {
                   variant="outline"
                   onClick={() => {
                     setIsEditing(false);
-                    // Reset to original values
+                    // Reset to original values with fallbacks
                     if (user) {
-                      setFirstName(user.firstName);
-                      setLastName(user.lastName);
+                      setFirstName(user.firstName || '');
+                      setLastName(user.lastName || '');
                       setProfileImage(user.profileImage || null);
                     }
                   }}
@@ -351,5 +314,7 @@ export default function ProfilePage() {
         </DialogContent>
       </Dialog>
     </div>
+     </ProtectedRoute>
+   
   );
 }

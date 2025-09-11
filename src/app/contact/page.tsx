@@ -16,20 +16,21 @@ function page() {
 
             <div className='w-1/2 mt-6 '>
 
-                <form action="" className='flex flex-col gap-6 mt-8'>
+                <form action="https://formspree.io/f/mkgvyqez"
+  method="POST" className='flex flex-col gap-6 mt-8'>
                     <div className='flex gap-4'>
                         <div>
                             <label htmlFor="" className='text-[14px] font-bold mb-4'>First name</label>
                             <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
                                 <FaInstagram />
-                                <input type="text" className='w-full border-none outline-none' />
+                                <input type="text" name="first_name" className='w-full border-none outline-none' />
                             </div>
                         </div>
                         <div>
                             <label htmlFor="" className='text-[14px] font-bold mb-4'>Last name</label>
                             <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
                                 <FaInstagram />
-                                <input type="text" className='w-full border-none outline-none' />
+                                <input type="text" name="last_name" className='w-full border-none outline-none' />
                             </div>
                         </div>
                     </div>
@@ -37,13 +38,13 @@ function page() {
                         <label htmlFor="" className='text-[14px] font-bold mb-4'>Email Address</label>
                         <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
                             <FaInstagram />
-                            <input type="email" className='w-full border-none outline-none' />
+                            <input type="email" name="email" className='w-full border-none outline-none' />
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="" className='text-[14px] font-bold mb-4'>Enter your message</label>
-                        <textarea name="" id="" className='w-full bg-[#F4F4F4] border-none outline-none p-4 h-[189px]' placeholder='Type your message...'></textarea>
+                        <textarea name="message" id="" className='w-full bg-[#F4F4F4] border-none outline-none p-4 h-[189px]' placeholder='Type your message...'></textarea>
                     </div>
 
                     

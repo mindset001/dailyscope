@@ -51,12 +51,13 @@ export default function ArticlesSection() {
                     <article key={article.id} className="rounded-lg shadow-md">
                         <div className='relative'>
                             <Image
-                                src={One} alt='' className='rounded-t-md ' />
+                                src={article.cover || One} alt='' className='rounded-t-md '  width={600}
+                  height={200} />
                             <span className=" absolute top-8 left-8 text-sm font-semibold bg-[#fff] p-[4px] rounded-[10px]">{article.category}</span>
                         </div>
                         <div className='p-6'>
                             <h2 className="text-2xl font-bold mt-2 mb-3">{article.title}</h2>
-                            <p className="text-gray-700 mb-4">{article.content}</p>
+                            <p className="text-gray-700 mb-4 line-clamp-3">{article.content}</p>
                        
                             <div className="flex items-center justify-between text-sm text-gray-500 mt-4 border-t pt-4 border-[#E5E5E5]">
                                 <div>

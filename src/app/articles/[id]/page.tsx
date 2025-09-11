@@ -7,6 +7,7 @@ import { singleArticles, trackArticleView } from '@/services/article';
 import ArticlesSection from '../components/Article';
 import { setCookie, getCookie } from 'cookies-next';
 import ReactMarkdown from 'react-markdown';
+import ProtectedRoute from '@/lib/ProtectedRoute';
 
 // Updated interface to match your actual API response
 interface Article {
@@ -98,6 +99,7 @@ export default function ArticleDetail() {
 
   if (loading) {
     return (
+      
       <div className="max-w-6xl mx-auto py-12 px-4">
         {/* Loading skeleton */}
         <div className="mb-8 animate-pulse">
@@ -136,7 +138,8 @@ export default function ArticleDetail() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-4">
+      <ProtectedRoute requireSubscription subscriptionRedirect="/subscribe">
+             <div className="max-w-6xl mx-auto py-12 px-4">
       {/* Article Header */}
       <div className="mb-8">
         <h1 className="text-[55px] font-[800] mt-4 mb-6 text-center">
@@ -245,5 +248,7 @@ export default function ArticleDetail() {
         <ArticlesSection />
       </div>
     </div>
+      </ProtectedRoute>
+ 
   );
 }

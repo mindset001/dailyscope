@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/app/context/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import toast from 'react-hot-toast';
+import ProtectedRoute from '@/lib/ProtectedRoute';
 
 interface Article {
   id: string;
@@ -89,12 +90,12 @@ export default function ArticleManagementPage() {
 
   // Fetch articles when user is set
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user) return;
 
     const fetchMyArticles = async () => {
       try {
         setLoading(true);
-        const data = await getUserArticles(user.id);
+        const data = await getUserArticles(user._id || user.id);
 
         // Map _id to id for each article
         const mappedData = data.map((article: any) => ({
@@ -248,7 +249,7 @@ const handleSave = async () => {
     setIsEditModalOpen(false);
 
     // Optional: Force refresh from server
-    const data = await getUserArticles(user?.id || '');
+    const data = await getUserArticles(user?._id || user?.id || '');
     setArticles(data);
     setFilteredArticles(data);
 
@@ -287,7 +288,8 @@ const handleSave = async () => {
   // ... (keep all your existing handler functions: trackArticleView, handleEdit, handleSave, handleDelete, handleConsent)
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
+     <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
+<div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Tracking Consent Banner */}
       {showConsentBanner && (
         <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 z-50">
@@ -562,5 +564,7 @@ const handleSave = async () => {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+     </ProtectedRoute>
+    
   );
 }
