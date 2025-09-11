@@ -120,26 +120,26 @@ function DashboardStats() {
       value: suspendedArticlesCount,
       icon: <DollarSign className="h-6 w-6 text-red-600" />,
     },
-    {
-      title: 'Subscription Status',
-      value: 'Active',
-      icon: <Star className="h-6 w-6 text-yellow-500" />,
-    },
-    {
-      title: 'Subscription Due Date',
-      value: '12, Sep 2024',
-      icon: <Users className="h-6 w-6 text-blue-600" />,
-    },
+    // {
+    //   title: 'Subscription Status',
+    //   value: 'Active',
+    //   icon: <Star className="h-6 w-6 text-yellow-500" />,
+    // },
+    // {
+    //   title: 'Subscription Due Date',
+    //   value: '12, Sep 2024',
+    //   icon: <Users className="h-6 w-6 text-blue-600" />,
+    // },
   ];
 
   if (loading) return <div>Loading dashboard...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-      <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
+      // <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
         <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Overview</h1>
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2">
         {dashboardData.map((item, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -199,7 +199,7 @@ function DashboardStats() {
         </CardContent>
       </Card>
     </div>
-      </ProtectedRoute>
+      // </ProtectedRoute>
     
   )
 }
