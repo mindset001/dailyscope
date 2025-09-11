@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
 
 type BillingCycle = 'monthly' | 'yearly';
@@ -33,86 +32,31 @@ const plans: Record<BillingCycle, Plan> = {
 
 export default function SubscriptionPlans() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
-  const [loading, setLoading] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
-    // Get user email from localStorage or context
+    // Get user info from localStorage or context
     const userData = localStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
-      setUserEmail(user.email);
+      setUserEmail(user.email || '');
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
     }
   }, []);
 
-  const initializePayment = async () => {
-    if (!userEmail) {
-      toast.error('Please log in to subscribe');
+  const handleSubscribe = () => {
+    if (!userEmail || !firstName || !lastName) {
+      toast.error('Please log in and ensure your profile is complete');
       return;
     }
 
-    setLoading(true);
-    try {
-      // First, create a subscription record in your backend
-      const response = await axiosInstance.post('/subscription/initialize', {
-        plan: billingCycle,
-        planCode: plans[billingCycle].planCode,
-        amount: billingCycle === 'monthly' ? 4000 : 40000,
-        email: userEmail
-      });
-
-      // Get the payment authorization URL from your backend
-      const { authorizationUrl, reference } = response.data;
-
-      // Open Paystack payment in a new window
-      const paymentWindow = window.open(authorizationUrl, '_blank');
-      
-      if (!paymentWindow) {
-        toast.error('Please allow popups for this site to complete payment');
-        setLoading(false);
-        return;
-      }
-
-      // Check payment status periodically
-      const checkPaymentStatus = setInterval(async () => {
-        if (paymentWindow.closed) {
-          clearInterval(checkPaymentStatus);
-          
-          try {
-            // Verify payment with your backend
-            const verificationResponse = await axiosInstance.get(`/subscription/verify/${reference}`);
-            
-            if (verificationResponse.data.status === 'success') {
-              toast.success('Subscription successful!');
-              // Update user context or local storage with subscription status
-              const userData = localStorage.getItem('user');
-              if (userData) {
-                const user = JSON.parse(userData);
-                user.subscription = {
-                  active: true,
-                  plan: billingCycle,
-                  nextBillingDate: verificationResponse.data.nextBillingDate
-                };
-                localStorage.setItem('user', JSON.stringify(user));
-              }
-              // Refresh the page or update UI accordingly
-              window.location.reload();
-            } else {
-              toast.error('Payment verification failed');
-            }
-          } catch (error) {
-            console.error('Error verifying payment:', error);
-            toast.error('Error verifying payment');
-          } finally {
-            setLoading(false);
-          }
-        }
-      }, 1000);
-    } catch (error) {
-      console.error('Error initializing payment:', error);
-      toast.error('Failed to initialize payment');
-      setLoading(false);
-    }
+    // Route to Paystack link with required details (email, planCode, firstName, lastName)
+    // If Paystack supports these query params, append them
+    const paystackUrl = `${plans[billingCycle].paystackLink}?email=${encodeURIComponent(userEmail)}&planCode=${plans[billingCycle].planCode}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+    window.open(paystackUrl, '_blank');
   };
 
   return (
@@ -152,11 +96,11 @@ export default function SubscriptionPlans() {
           <p className="text-gray-600 mb-4">Per {plans[billingCycle].period}</p>
           
           <button
-            onClick={initializePayment}
-            disabled={loading || !userEmail}
+            onClick={handleSubscribe}
+            disabled={!userEmail || !firstName || !lastName}
             className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors mb-4 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : 'Subscribe Now'}
+            Subscribe Now
           </button>
           
           <p className="text-sm text-gray-500">{plans[billingCycle].description}</p>

@@ -199,19 +199,19 @@ export default function SubscriptionRequiredPage() {
               </p>
             </div>
             
-            <div>
+            {/* <div>
               <h3 className="font-semibold text-lg mb-2">Is there a free trial?</h3>
               <p className="text-gray-600">
                 We offer a 7-day free trial for new subscribers to test all article management features.
               </p>
-            </div>
+            </div> */}
             
-            <div>
+            {/* <div>
               <h3 className="font-semibold text-lg mb-2">What payment methods do you accept?</h3>
               <p className="text-gray-600">
                 We accept all major credit cards, debit cards, and bank transfers.
               </p>
-            </div>
+            </div> */}
             
             <div>
               <h3 className="font-semibold text-lg mb-2">Can I upgrade or downgrade?</h3>
@@ -223,14 +223,14 @@ export default function SubscriptionRequiredPage() {
         </div>
 
         {/* Support CTA */}
-        <div className="text-center mt-12">
+        {/* <div className="text-center mt-12">
           <p className="text-gray-600 mb-4">
             Need help deciding? Our team is here to help!
           </p>
           <Button variant="outline">
             <a href="mailto:support@yourdomain.com">Contact Support</a>
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
