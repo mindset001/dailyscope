@@ -3,6 +3,8 @@ import Link from 'next/link'
 import React from 'react'
 import { FaInstagram, FaInstagramSquare } from 'react-icons/fa'
 import Login from '@/../public/images/Subtract.png'
+import { MdOutlineMail } from 'react-icons/md'
+import { IoPersonOutline } from 'react-icons/io5'
 
 function page() {
   return (
@@ -22,14 +24,14 @@ function page() {
                         <div>
                             <label htmlFor="" className='text-[14px] font-bold mb-4'>First name</label>
                             <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
-                                <FaInstagram />
+                                  <IoPersonOutline className="text-gray-500" />
                                 <input type="text" name="first_name" className='w-full border-none outline-none' />
                             </div>
                         </div>
                         <div>
                             <label htmlFor="" className='text-[14px] font-bold mb-4'>Last name</label>
                             <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
-                                <FaInstagram />
+                                   <IoPersonOutline className="text-gray-500" />
                                 <input type="text" name="last_name" className='w-full border-none outline-none' />
                             </div>
                         </div>
@@ -37,7 +39,7 @@ function page() {
                     <div>
                         <label htmlFor="" className='text-[14px] font-bold mb-4'>Email Address</label>
                         <div className='flex items-center gap-2 bg-[#F4F4F4] rounded-md px-4 py-2'>
-                            <FaInstagram />
+                              <MdOutlineMail className="text-gray-500" />
                             <input type="email" name="email" className='w-full border-none outline-none' />
                         </div>
                     </div>

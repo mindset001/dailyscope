@@ -49,7 +49,8 @@ export default function ArticlesSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 ">
                 {articles.map((article) => (
                     <article key={article.id} className="rounded-lg shadow-md">
-                        <div className='relative'>
+                       <Link   href={`/articles/${article._id}`} >
+                         <div className='relative'>
                             <Image
                                 src={article.cover || One} alt='' className='rounded-t-md '  width={600}
                   height={200} />
@@ -68,6 +69,9 @@ export default function ArticlesSection() {
                                 </div>
                             </div>
                         </div>
+                       </Link>
+
+                       
                     </article>
                 ))}
             </div>

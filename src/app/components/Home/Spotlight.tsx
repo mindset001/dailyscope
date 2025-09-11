@@ -38,7 +38,7 @@ export default function Spotlight() {
         <section className="max-w-6xl mx-auto ">
             <div className='flex items-center justify-between px-6 py-6'>
                 <div>
-                    <h1 className="text-[14px] md:text-3xl font-bold">Featured Spotlightffff</h1>
+                    <h1 className="text-[14px] md:text-3xl font-bold">Featured Spotlight</h1>
                     <p className="text-[10px] md:text-[16px] text-gray-600 pt-2">Celebrating creators, thinkers, and cultural innovators</p>
                 </div>
                 <div className="mt-8 md:border border-[#E5E5E5] rounded-[12px] md:px-4 md:py-2">
@@ -51,9 +51,10 @@ export default function Spotlight() {
             <div className=" grid grid-cols-1 md:grid-cols-3 gap-8 ">
                 {articles.map((article) => (
                     <article key={article.id} className="rounded-lg shadow-md">
-                        <div>
+                        <Link  href={`/articles/${article._id}`} >
+                            <div>
                             <Image
-                                src={article.cover || One} alt='' className='rounded-t-md '  width={400}
+                                src={article.cover || One} alt='' className='rounded-t-md h-[300px]'  width={400}
                   height={100} />
                         </div>
                         <div className='p-4'>
@@ -66,6 +67,7 @@ export default function Spotlight() {
                                
                             </div>
                         </div>
+                        </Link>
                     </article>
                 ))}
             </div>
