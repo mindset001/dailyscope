@@ -16,7 +16,7 @@ export default function Hero() {
           Start Reading
         </button>
          </Link>
-        <Link href="/auth/signup" className="">
+        <Link href="/dashboard/subscription" className="">
         <button className="bg-[#FFFFFF] cursor-pointer font-[500] text-[#000] hover:bg-black hover:text-white px-8 py-3 rounded-lg text-[14px] md:text-[18px] font-medium">
          
            Become a Member
