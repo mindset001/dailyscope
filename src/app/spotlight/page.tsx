@@ -6,14 +6,13 @@ import ProtectedRoute from '@/lib/ProtectedRoute'
 
 function Page() {
   return (
-    <ProtectedRoute requireSubscription subscriptionRedirect="/dashboard/subscription">
+
       <main className='flex flex-col gap-10'>
         <div className='bg-[#f9f9f9] px-8 md:px-20 py-4 md:py-10 flex flex-col gap-16'>
           <Hero/>
           <Spotlight/>
         </div>
       </main>
-    </ProtectedRoute>
   )
 }
 
